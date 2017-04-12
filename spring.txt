@@ -1,0 +1,198 @@
+Spring 的定义:	
+	Spring是一个开源框架，是为了解决企业级应用开发的复杂性而创建的。使用基本的 JavaBean 代替 EJB，并提供了更多的企业应用功能 。
+简单来说，Spring是一个轻量级的控制反转(IOC)和面向切面(AOP)的容器框架。可被用于任何 Java 应用。 
+
+Inverse of control(IOC)
+	把创建对象(bean)，维护对象和对象之间的关系的权利，从程序中转移到外部容器(spring)中去。控制权的反转，就是所谓的控制反转。
+         
+spring环境配置:
+	1.配置架包
+	2.配置文件
+	3.写测试类
+		ApplicationContext ac = new ClassPathXmlApplication("bean.xml");
+		
+spring 简单注入
+	1.通过setter注入:提供getter/setter方法;(很重要,记住)
+	2.构造器方法注入:(了解)
+	3.接口(方法)注入:
+	
+spring的集合注入:
+	数组:
+	Properties:
+	list:
+	set:
+	map:
+Spring的自动装配
+	1.byName
+	2.byType
+	
+Spring的bean的创建模式:
+	1.单例模式(singleton)
+	2.原型模式(protoType)
+	
+Spring的bean的生命周期
+	init-method :bean的初始化方法
+	destroy-method :bean的销毁方法(不能和prototype混合使用,因为原型模式每次创建,使用之后会自动关闭)
+	
+注解的配置
+	<context:annotation-config/>//检查注解
+	
+	@Required //容错注解(没什么用)
+	@Autowired //属性注入(默认通过类型自动装配)
+	@qualifier //属性注入(通过名字装配)
+	@Resource //属性注入 *****(通过名字)
+	
+	@Component
+	@Repository(注解在DAO上)
+	@Service(注解在Service上)
+	@Controller(注解在控制层)
+	@Advice(注解在通知上)
+	
+AOP:
+	AOP:Aspect Oriented Program,面向切面编程,动态的想核心业务逻辑中加入一些边缘性的功能
+	
+	实现AOP:
+		1,JDK中的动态代理,InvocationHandler接口(实现接口AOP)
+		2,实现类必须加入CGLIB jar包
+		
+	SPRINGde AOP中引入了Aspect框架
+	Advice(通知):从多个组件中抽出的需要被复用的代码或功能，也即切面需要做的操作。
+	Weave(织入):将Advice中的功能，应用到各组件的过程
+	JoinPoint(连接点):以方法为单元，定义Advice可以织入的点
+					（before,after,after-return,after-throw,around）
+	PointCut(切入点):用表达式定义一组 Join Point的集合。
+	Aspect(切面):声明一个切面，是一组关注点的模块化。
+				Aspect = Advice + PointCut
+	
+	
+	AspectJ中的通知类型:
+		before:前置通知,方法之前执行
+		Around:环绕通知,方法前后执行
+		AfterRetrunning:方法成功后,执行功能
+		After:后置通知,方法之后执行,无论是否发生异常
+		AfterThrowing:在方法发生异常之后执行		
+	
+	定义连接点
+		execution:
+		* com.tz.spring.service.impl.UserServiceImpl.save(com.tz.spring.entity.User)
+	通配:	* com.tz.spring.service.impl.*.*(..)
+	
+	openSession:每次获取都是全新的connection
+	getCurrentSession()不会立刻提交
+	
+	
+SSH整合一:
+	1.配置Struts环境
+	2.在web环境下,加载spring的配置文件,使用监听器,并且把spring的上下文放到全局作用域里
+	3.在struts的Action中从全局作用域中获得spring的上下文对象
+	4.从上下文对象中获得需要的bean
+	
+	注:此时struts并没有在spring中进行管理
+	
+Spring集成Struts2
+	1.加入Struts2的spring插件jar包
+	2,在struts.xml文件中,加入常量
+		<constant name="struts.objectFactory" value="spring" />
+	3,配置监听器,读取spring配置文件,在web.xml
+		<listener>
+	        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	    </listener>
+	    <context-param>
+	        <param-name>contextConfigLocation</param-name>
+	        <param-value>classpath:beans.xml</param-value>
+	    </context-param>
+	4,配置struts2的过滤器
+		<filter>
+	        <filter-name>struts2</filter-name>
+	        <filter-class>org.apache.struts2.dispatcher.ng.filter.StrutsPrepareAndExecuteFilter</filter-class>
+	    </filter>
+	
+	    <filter-mapping>
+	        <filter-name>struts2</filter-name>
+	        <url-pattern>/*</url-pattern>
+	    </filter-mapping>	
+	  
+	 解决页面Session关闭问题:
+	 	配置一个过滤器,在页面打开session
+	 	
+	 	<filter>
+		  	<filter-name>openSessionInViewFilter</filter-name>
+		  	<filter-class>org.springframework.orm.hibernate4.support.OpenSessionInViewFilter</filter-class>
+		  
+		  	
+		  	<init-param>
+		  		<param-name>sessionFactoryBeanName</param-name>
+		  		<param-value>mySessionFactory</param-value>
+		  	</init-param>
+		</filter>
+		  
+		<filter-mapping>
+		  	<filter-name>openSessionInViewFilter</filter-name>
+		  	<url-pattern>/*</url-pattern>
+		</filter-mapping>
+    
+WEB-MVC技术:
+	servlet + jsp ==>
+	struts1 + jsp ==>
+	springMVC     ==>
+	struts + ognl ==>
+	
+SpringMVC启动类,
+	DispatcherServlet
+	
+	请求发送--->经过主控制器--->找到执行action-->返回结果-->主控制器
+	---->视图
+	
+	
+	@RequestMapping -->action的url路径
+
+	
+	第一步:
+		配置jar包
+	第二步:
+		配置spring的主控制器
+			<servlet>
+		        <servlet-name>dispatcher</servlet-name>
+		        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		       
+		        <init-param>
+		            <param-name>contextConfigLocation</param-name>
+		            <param-value>/WEB-INF/servlet-config.xml</param-value>
+		        </init-param>
+		        
+		        <load-on-startup>1</load-on-startup>
+		    </servlet>
+		
+		    <servlet-mapping>
+		        <servlet-name>dispatcher</servlet-name>
+		        <url-pattern>/</url-pattern>
+		    </servlet-mapping>
+	第三步:
+		配置springMVC的主配置文件
+			<!--处理返回结果  -->
+			<bean id="jspViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+			    <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+			    <property name="prefix" value="/jsp/"/>
+			    <property name="suffix" value=".jsp"/>
+			</bean>
+
+        第四步:
+                 创建Action,并实例化 @Controller
+                 配置url-pattern
+          @RequestMapping -->action的url路径       
+
+
+
+
+
+
+
+
+
+
+	
+	
+	
+	
+	
+	
